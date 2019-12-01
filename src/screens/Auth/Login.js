@@ -5,9 +5,11 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import Metrics from '../../config/Metrics';
 import Register from './Register';
+import URL from '../../config/URL';
 
 export default class Login extends Component {
   constructor(props) {
@@ -28,7 +30,37 @@ export default class Login extends Component {
   };
 
   //Login button click action
-  loginButton = () => {};
+  loginButton = () => {
+    fetch(URL.USER_LOGIN, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        Email: this.state.email,
+        Password: this.state.password,
+      }),
+    })
+      .then(response => response.json())
+      .then(responseText => {
+        console.log(responseText);
+        if (responseText.status_code == 200) {
+          Alert.alert('Success', 'Login Complete ...', [{text: 'OK'}], {
+            cancelable: false,
+          });
+        } else {
+          Alert.alert(
+            'Error',
+            'Email or Password invalid ...',
+            [{text: 'OK'}],
+            {
+              cancelable: false,
+            },
+          );
+        }
+      })
+      .catch(error => {});
+  };
 
   render() {
     return (
@@ -63,16 +95,16 @@ export default class Login extends Component {
                 }}
               />
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => this.loginButton()}>
               <View style={styles.buttonContianer}>
                 <Text style={styles.buttonText}>Login</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => this.regsisterButton()}>
+            {/* <TouchableOpacity onPress={() => this.regsisterButton()}>
               <View style={styles.buttonContianer}>
                 <Text style={styles.buttonText}>Register</Text>
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
       </View>
